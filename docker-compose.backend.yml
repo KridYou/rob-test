@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_db-rob-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rob-db
+      MYSQL_USER: nestuser
+      MYSQL_PASSWORD: nestpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - nest_network
+
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest_app-rob-test
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: nestuser
+      DB_PASSWORD: nestpass
+      DB_NAME: rob-test
+      JWT_SECRET: secret123
+    ports:
+      - "3000:3000"
+    networks:
+      - nest_network
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mysql_data:
+
+networks:
+  nest_network:
+    external: true

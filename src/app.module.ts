@@ -5,6 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './user/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { CardModule } from './card/card.module';
+import { Card, Comment } from './card/entities/card.entity';
+import { CardHistory } from './card/entities/card-histories.entity';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -15,12 +19,14 @@ import { UserModule } from './user/user.module';
       username: process.env.DB_USER || 'nestuser',
       password: process.env.DB_PASSWORD || 'nestpass',
       database: process.env.DB_NAME || 'rob-db',
-      entities: [User],
+      entities: [User, Card, Comment, CardHistory],
       synchronize: true,
+      namingStrategy: new SnakeNamingStrategy(),
     })
-    , 
+    ,
     AuthModule,
-    UserModule],
+    UserModule,
+    CardModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -28,17 +28,20 @@ export class Card {
     })
     cardStatus: CardStatus;
 
-    @OneToMany(() => Comment, (comment) => comment.post, { cascade: true })
+    @OneToMany(() => Comment, (comment) => comment.card, { cascade: true })
     comments: Comment[];
 
     @Column()
-    created_by: string;
+    createdBy: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @Column({nullable: true})
+    updatedBy: string;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    updatedAt: Date;
 
     @OneToMany(() => CardHistory, (history) => history.card, { cascade: true })
     histories: CardHistory[];
@@ -53,14 +56,14 @@ export class Comment {
     content: string;
 
     @ManyToOne(() => Card, (card) => card.comments, { onDelete: 'CASCADE' })
-    post: Card;
+    card: Card;
 
     @Column()
-    created_by: string;
+    createdBy: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    createdAt: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    updatedAt: Date;
 }

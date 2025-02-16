@@ -17,9 +17,9 @@ export class CreateCardDto {
 }
 
 export class CreateCommentDto {
+    @ApiProperty({ example: 'Some comment' })
+    @IsString()
     content: string;
-    created_by: string;
-    postId: string;
 }
 
 // export class CreateProductDto {

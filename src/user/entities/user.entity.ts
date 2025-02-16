@@ -7,11 +7,11 @@ export enum Role {
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column({ unique: true })
-  username: string;
+  email: string;
 
   @Column()
   password: string;

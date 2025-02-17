@@ -5,6 +5,7 @@ import { Card, Comment } from './entities/card.entity';
 import { CreateCardDto, CreateCommentDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { CardHistory } from './entities/card-histories.entity';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CardService {
@@ -36,7 +37,7 @@ export class CardService {
     return await this.commentRepository.save(createdComment);
   }
 
-  async updatePost(cardId: string, updateCommentDto: UpdateCardDto, userId: string): Promise<{ message: string }> {
+  async updateCard(cardId: string, updateCardDto: UpdateCardDto, userId: string): Promise<{ message: string }> {
     const existingCard: Card = await this.cardRepository.findOne({ where: { id: cardId } })
     if (!existingCard) {
       throw new NotFoundException(`Card with ID ${cardId} not found`);
@@ -51,9 +52,9 @@ export class CardService {
 
     await this.cardHistoryRepository.insert(createdCardHis)
 
-    existingCard.topic = updateCommentDto.topic
-    existingCard.description = updateCommentDto.description
-    existingCard.cardStatus = updateCommentDto.cardStatus
+    existingCard.topic = updateCardDto.topic
+    existingCard.description = updateCardDto.description
+    existingCard.cardStatus = updateCardDto.cardStatus
     existingCard.updatedBy = userId
 
     await this.cardRepository.update({ id: cardId }, { ...existingCard })
@@ -61,18 +62,42 @@ export class CardService {
     return { message: 'Card updated successfully' }
   }
 
+  async updateComment(commentId: string, updateCommentDto: UpdateCommentDto): Promise<{ message: string }> {
+    const existingComment: Comment = await this.commentRepository.findOne({ where: { id: commentId } })
+    if (!existingComment) {
+      throw new NotFoundException(`Comment with ID ${commentId} not found`);
+    }
+
+    existingComment.content = updateCommentDto.content
+
+    await this.commentRepository.update({ id: commentId }, { ...existingComment })
+
+    return { message: 'Comment updated successfully' }
+  }
+
+  async findCardById(id: string): Promise<Card> {
+    const card = await this.cardRepository.findOne({ where: { id } });
+
+    if (!card) {
+      throw new NotFoundException(`Card with ID ${id} not found`);
+    }
+
+    return card;
+  }
+
+  async findCommentById(id: string): Promise<Comment> {
+    const comment = await this.commentRepository.findOne({ where: { id } });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment with ID ${id} not found`);
+    }
+
+    return comment;
+  }
+
   findAll(): Promise<Card[]> {
     return this.cardRepository.find({ relations: ['comments'] });
   }
-
-  // findOne(id: string): Promise<Post> {
-  //   return this.postsRepository.findOne(id, { relations: ['comments'] });
-  // }
-
-  // async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
-  //   await this.postsRepository.update(id, updatePostDto);
-  //   return this.postsRepository.findOne(id);
-  // }
 
   async remove(id: string): Promise<void> {
     await this.cardRepository.delete(id);

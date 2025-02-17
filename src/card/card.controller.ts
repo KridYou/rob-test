@@ -15,6 +15,10 @@ import { CardService } from './card.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthenticatedRequest } from './interface/authenticate-request.interface';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { Card } from './entities/card.entity';
+import { PostOwnerGuard } from './post-owner.guard';
+import { CommentOwnerGuard } from './comment-owner.guard';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @ApiTags('Card')
 @Controller('cards')
@@ -28,8 +32,6 @@ export class CardController {
   createCard(@Req() req: AuthenticatedRequest, @Body() createPostDto: CreateCardDto) {
     const userData = req.user
     const userId = userData.userId
-    console.log('userData', userData)
-    console.log('userId', userId);
     return this.cardService.createCard(createPostDto, userId);
   }
 
@@ -48,30 +50,34 @@ export class CardController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a card' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PostOwnerGuard)
   @ApiResponse({ status: 200, description: 'Update card successfully' })
-  updatePost(@Param('id') postId: string, @Body() updateCardDto: UpdateCardDto,
+  updatePost(@Param('id') cardId: string, @Body() updateCardDto: UpdateCardDto,
     @Req() req: AuthenticatedRequest
   ) {
     const userId = req.user.userId
 
-    return this.cardService.updatePost(postId, updateCardDto, userId);
+    return this.cardService.updateCard(cardId, updateCardDto, userId);
+  }
+
+  @Patch('comments/:id')
+  @ApiOperation({ summary: 'Update a comment' })
+  @UseGuards(JwtAuthGuard, CommentOwnerGuard)
+  @ApiResponse({ status: 200, description: 'Update card successfully' })
+  updateComment(@Param('id') commentId: string, @Body() updateCommentDto: UpdateCommentDto,
+  ) {
+    return this.cardService.updateComment(commentId, updateCommentDto);
+  }
+
+  @Get(':id')
+  async getCardById(@Param('id') id: string): Promise<Card> {
+    return await this.cardService.findCardById(id);
   }
 
   @Get()
   findAll() {
     return this.cardService.findAll();
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.postsService.findOne(id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-  //   return this.postsService.update(id, updatePostDto);
-  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

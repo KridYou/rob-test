@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsEnum } from 'class-validator';
+import { IsString, IsEnum } from 'class-validator';
 import { CardStatus } from 'src/common/card-status.enum';
 
 export class CreateCardDto {
@@ -21,14 +21,3 @@ export class CreateCommentDto {
     @IsString()
     content: string;
 }
-
-// export class CreateProductDto {
-//     @IsString()
-//     name: string;
-
-//     @IsString()
-//     description: string;
-
-//     @IsNumber()
-//     price: number;
-// }

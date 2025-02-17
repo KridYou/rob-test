@@ -28,13 +28,16 @@ export class Card {
     })
     cardStatus: CardStatus;
 
+    @Column({ default: false })
+    isStored: boolean;
+
     @OneToMany(() => Comment, (comment) => comment.card, { cascade: true })
     comments: Comment[];
 
     @Column()
     createdBy: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     updatedBy: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })

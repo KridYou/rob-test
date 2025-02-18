@@ -10,6 +10,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "src/*": ["src/*"]  // This allows you to import using "src/..."
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

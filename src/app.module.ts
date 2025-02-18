@@ -9,25 +9,35 @@ import { CardModule } from './card/card.module';
 import { Card, Comment } from './card/entities/card.entity';
 import { CardHistory } from './card/entities/card-histories.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '3306', 10),
-      username: process.env.DB_USER || 'nestuser',
-      password: process.env.DB_PASSWORD || 'nestpass',
-      database: process.env.DB_NAME || 'rob-db',
-      entities: [User, Card, Comment, CardHistory],
-      synchronize: true,
-      namingStrategy: new SnakeNamingStrategy(),
-    })
-    ,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USER'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_NAME'),
+        entities: [User, Card, Comment, CardHistory],
+        synchronize: true,
+        namingStrategy: new SnakeNamingStrategy(),
+      }),
+    }),
+
     AuthModule,
     UserModule,
-    CardModule],
+    CardModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

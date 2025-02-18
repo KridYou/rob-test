@@ -21,7 +21,6 @@ export class CardService {
   async createCard(createCardtDto: CreateCardDto, userId: string): Promise<Card> {
     const createdCard: Card = this.cardRepository.create(createCardtDto);
     createdCard.createdBy = userId
-    console.log('createdCard', createdCard)
     return await this.cardRepository.save(createdCard);
   }
 
@@ -33,7 +32,6 @@ export class CardService {
     const createdComment: Comment = this.commentRepository.create(createCommentDto);
     createdComment.createdBy = userId
     createdComment.card = existingCard
-    console.log('createdComment', createdComment)
     return await this.commentRepository.save(createdComment);
   }
 

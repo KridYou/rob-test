@@ -19,6 +19,7 @@ import { Card } from './entities/card.entity';
 import { PostOwnerGuard } from './post-owner.guard';
 import { CommentOwnerGuard } from './comment-owner.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Card')
 @Controller('cards')

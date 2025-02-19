@@ -97,7 +97,7 @@ export class CardService {
     return this.cardRepository.find({ relations: ['comments'] });
   }
 
-  async remove(id: string): Promise<void> {
-    await this.cardRepository.delete(id);
+  async softDelete(id: string): Promise<void> {
+    await this.cardRepository.softDelete(id);
   }
 }

@@ -23,15 +23,18 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 @ApiTags('Card')
 @Controller('cards')
 export class CardController {
-  constructor(private readonly cardService: CardService) { }
+  constructor(private readonly cardService: CardService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new card' })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 201, description: 'Create post successfully' })
-  createCard(@Req() req: AuthenticatedRequest, @Body() createPostDto: CreateCardDto) {
-    const userData = req.user
-    const userId = userData.userId
+  createCard(
+    @Req() req: AuthenticatedRequest,
+    @Body() createPostDto: CreateCardDto,
+  ) {
+    const userData = req.user;
+    const userId = userData.userId;
     return this.cardService.createCard(createPostDto, userId);
   }
 
@@ -42,9 +45,9 @@ export class CardController {
   createComment(
     @Param('id') cardId: string,
     @Body() createCommentDto: CreateCommentDto,
-    @Req() req: AuthenticatedRequest
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = req.user.userId
+    const userId = req.user.userId;
     return this.cardService.addCommentToPost(cardId, createCommentDto, userId);
   }
 
@@ -52,10 +55,12 @@ export class CardController {
   @ApiOperation({ summary: 'Update a card' })
   @UseGuards(JwtAuthGuard, PostOwnerGuard)
   @ApiResponse({ status: 200, description: 'Update card successfully' })
-  updatePost(@Param('id') cardId: string, @Body() updateCardDto: UpdateCardDto,
-    @Req() req: AuthenticatedRequest
+  updatePost(
+    @Param('id') cardId: string,
+    @Body() updateCardDto: UpdateCardDto,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = req.user.userId
+    const userId = req.user.userId;
 
     return this.cardService.updateCard(cardId, updateCardDto, userId);
   }
@@ -64,7 +69,9 @@ export class CardController {
   @ApiOperation({ summary: 'Update a comment' })
   @UseGuards(JwtAuthGuard, CommentOwnerGuard)
   @ApiResponse({ status: 200, description: 'Update card successfully' })
-  updateComment(@Param('id') commentId: string, @Body() updateCommentDto: UpdateCommentDto,
+  updateComment(
+    @Param('id') commentId: string,
+    @Body() updateCommentDto: UpdateCommentDto,
   ) {
     return this.cardService.updateComment(commentId, updateCommentDto);
   }
@@ -80,7 +87,7 @@ export class CardController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cardService.remove(id);
+  softDelete(@Param('id') id: string) {
+    return this.cardService.softDelete(id);
   }
 }

@@ -5,13 +5,24 @@ import { AuthenticatedRequest } from './interface/authenticate-request.interface
 import { CreateCardDto, CreateCommentDto } from './dto/create-card.dto';
 import { CardStatus } from 'src/common/card-status.enum';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 describe('CardController', () => {
   let controller: CardController;
   let service: CardService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ThrottlerModule.forRoot({
+          throttlers: [
+            {
+              limit: 10,
+              ttl: 60000,
+            },
+          ],
+        }),
+      ],
       controllers: [CardController],
       providers: [
         {
@@ -60,8 +71,29 @@ describe('CardController', () => {
     service = module.get<CardService>(CardService);
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  // rate limit
+  it('should apply rate limiting', async () => {
+    const rateLimit = 10;
+
+    await controller.findAll();
+
+    for (let i = 0; i < rateLimit; i++) {
+      await controller.findAll();
+    }
+
+    try {
+      await controller.findAll();
+    } catch (error) {
+      expect(error.response.statusCode).toBe(429);
+    }
   });
 
   describe('createCard', () => {

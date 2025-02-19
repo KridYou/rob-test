@@ -85,8 +85,9 @@ describe('CardController', () => {
 
     await controller.findAll();
 
-    for (let i = 0; i < rateLimit; i++) {
-      await controller.findAll();
+    for (let i = 0; i < rateLimit ; i++) {
+      const result = await controller.findAll();
+      expect(result.statusCode).toBe(200);
     }
 
     try {
@@ -192,18 +193,22 @@ describe('CardController', () => {
       const result = await controller.findAll();
 
       expect(service.findAll).toHaveBeenCalled();
-      expect(result).toEqual([
-        {
-          id: 'cd039329-5b08-4be7-9f9d-ed4437e28208',
-          title: 'Test Card 1',
-          description: 'Description 1',
-        },
-        {
-          id: '194266ea-934b-45fb-a15c-d84ab8f04c13',
-          title: 'Test Card 2',
-          description: 'Description 2',
-        },
-      ]);
+      expect(result).toEqual({
+        data: [
+          {
+            description: 'Description 1',
+            id: 'cd039329-5b08-4be7-9f9d-ed4437e28208',
+            title: 'Test Card 1',
+          },
+          {
+            description: 'Description 2',
+            id: '194266ea-934b-45fb-a15c-d84ab8f04c13',
+            title: 'Test Card 2',
+          },
+        ],
+        message: 'Data fetched successfully',
+        statusCode: 200,
+      });
     });
   });
 

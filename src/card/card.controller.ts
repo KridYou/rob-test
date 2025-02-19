@@ -19,6 +19,7 @@ import { Card } from './entities/card.entity';
 import { PostOwnerGuard } from './post-owner.guard';
 import { CommentOwnerGuard } from './comment-owner.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { SuccessResponse } from './interface/success-response.interface';
 
 @ApiTags('Card')
 @Controller('cards')
@@ -83,8 +84,13 @@ export class CardController {
 
   @Get()
   @ApiResponse({ status: 200, description: 'Get cards successfully' })
-  findAll() {
-    return this.cardService.findAll();
+  async findAll():Promise<SuccessResponse<any>> {
+    const result = await this.cardService.findAll();
+    return {
+      statusCode: 200,
+      message: 'Data fetched successfully',
+      data: result,
+    };
   }
 
   @Delete(':id')

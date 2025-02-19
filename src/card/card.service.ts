@@ -93,8 +93,9 @@ export class CardService {
     return comment;
   }
 
-  findAll(): Promise<Card[]> {
-    return this.cardRepository.find({ relations: ['comments'] });
+  async findAll(): Promise<Card[]> {
+    const result = await this.cardRepository.find({ relations: ['comments'] });
+    return result
   }
 
   async softDelete(id: string): Promise<void> {
